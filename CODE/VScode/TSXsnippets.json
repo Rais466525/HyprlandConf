@@ -1,0 +1,57 @@
+{
+	"Next.js Layout": {
+
+		"prefix": "pnl",
+		"description": "Next Layout",
+
+      "body": [
+         "export default function ${0}({",
+         "   children,",
+         "}: Readonly<{",
+         "   children: React.ReactNode;",
+         "}>) {",
+         "   return (",
+         "      <div>",
+         "         {children}",
+         "      </div>",
+         "   )",
+         "}"
+      ]
+   },
+
+
+	"Next.js Page": {
+
+      "prefix": "pnp",
+		"description": "Next Page",
+
+      "body": [
+         "export default function ${0}() {",
+         "   return (",
+         "      <div className='h-screen'>",
+         "         ${0}",
+         "      </div>",
+         "   )",
+         "}"
+      ]
+   },
+
+
+	"React.js Component": {
+
+		"prefix": "prc",
+		"description": "React Components",
+
+      "body": [
+         "import Styles from './${0}.module.scss'",
+         "",
+         "export const ${0} = ({}) => {",
+         "   return (",
+         "      <div>",
+         "         ${0}",
+         "      </div>",
+         "   )",
+         "}"
+      ]
+   },
+}
