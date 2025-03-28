@@ -1,4 +1,3 @@
-
 # Путь к папке с обоями
 WALLPAPER_DIR="/home/rais/MACO-CONF/WALLPAPERS"
 
@@ -8,8 +7,8 @@ if ! command -v swww &>/dev/null; then
   exit 1
 fi
 
-# Ищем изображения и видео
-FILES=$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.mp4" \))
+# Ищем изображения и GIF
+FILES=$(find "$WALLPAPER_DIR" -type f \( -iname "*.jpg" -o -iname "*.png" -o -iname "*.gif" \))
 
 # Проверяем, есть ли файлы
 if [ -z "$FILES" ]; then
@@ -32,18 +31,36 @@ fi
 # Находим полный путь к выбранному файлу
 SELECTED=$(echo "$FILES" | grep -F -- "$SELECTED_NAME")
 
-# Меняем обои в зависимости от формата
-if [[ "$SELECTED" =~ \.mp4$ ]]; then
-  # Для видео
-  swww vid "$SELECTED" --transition-type grow --transition-duration 2
-else
-  # Для изображений
-  swww img "$SELECTED" --transition-type grow --transition-duration 2
-fi
+# Определяем расширение выбранного файла
+EXTENSION="${SELECTED##*.}"
 
-# Дополнительная анимация (blend)
-# if [[ "$SELECTED" =~ \.mp4$ ]]; then
-#   swww vid "$SELECTED" --transition-type fade --transition-duration 2 --transition-fps 60
-# else
-#   swww img "$SELECTED" --transition-type fade --transition-duration 2 --transition-fps 60
-# fi
+# Функция для предварительного изменения размера GIF
+resize_gif() {
+  local gif_file="$1"
+  local temp_file="${gif_file%.gif}_resized.gif"
+  gifsicle --resize-width 1920 --resize-height 1080 "$gif_file" > "$temp_file"
+  echo "$temp_file"
+}
+
+# Устанавливаем обои в зависимости от типа файла
+case "$EXTENSION" in
+  jpg|png)
+    swww img "$SELECTED"
+    ;;
+  gif)
+    # Проверяем размер GIF и при необходимости изменяем его
+    GIF_SIZE=$(stat -c %s "$SELECTED")
+    if [ "$GIF_SIZE" -gt 5000000 ]; then
+      echo "GIF слишком большой, изменяем размер..."
+      RESIZED_GIF=$(resize_gif "$SELECTED")
+      swww img "$RESIZED_GIF"
+      rm "$RESIZED_GIF"  # Удаляем временный файл после использования
+    else
+      swww img "$SELECTED"
+    fi
+    ;;
+  *)
+    echo "Неизвестный формат файла: $EXTENSION"
+    exit 1
+    ;;
+esac

@@ -1,0 +1,1 @@
+export GTK_PATH="/home/rais/MACO-CONF/THEMES"
